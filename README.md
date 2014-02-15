@@ -1,7 +1,7 @@
 InControl-Web
 =============
 
-This website uses Node and Express to connect to an InControl server.
+This website uses Node and Express to connect to an InControl server. InControl provides the ability to control home automation devices such as z-wave, Belkin WeMo and other internet-of-things. This requires InControl HA Server found at http://incontrolha.com
 
 ### Current State
 
