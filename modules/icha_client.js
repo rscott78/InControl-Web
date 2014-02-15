@@ -77,6 +77,7 @@ function parseDevices(deviceJson) {
 			// Add a function for retrieving the image
 			// TODO: This should be better abstracted
 			rDevice.deviceImage = getDeviceImage;
+			rDevice.status = getDeviceStatus;
 
 			//console.log("Added", rDevice);
 		} else {
@@ -199,6 +200,42 @@ function getDeviceImage() {
 	}
 
 	return imageName.replace("{0}", this.level > 0 ? "on" : "off");	
+}
+
+///
+///
+///
+function getDeviceStatus() {
+
+	var status = "";
+
+	switch (this.deviceType) {
+		case DeviceTypeEnum.StandardSwitch:
+		case DeviceTypeEnum.DimmerSwitch:
+		case DeviceTypeEnum.PowerOutlet:
+			status = "turned {onOff} {timeAgo}";
+			break;		
+		case DeviceTypeEnum.BinarySensor:
+			status = "{openClosed} {timeAgo}";
+			break;
+		case DeviceTypeEnum.MotionSensor:
+			status = "{motionState} {timeAgo}";
+			break;
+		case DeviceTypeEnum.IpCamera:
+			status = "Doing the camera thing";
+			break;
+		case DeviceTypeEnum.Thermostat:
+			status = "";
+			break;
+	}
+
+	// Replace texts
+	status = status.replace("{onOff}", this.level > 0 ? "on" : "off");
+	status = status.replace("{openClosed}", this.level > 0 ? "opened" : "closed");
+	status = status.replace("{motionState}", this.level > 0 ? "" : "");
+	status = status.replace("{timeAgo}", "todo");
+
+	return status;
 }
 
 /// 

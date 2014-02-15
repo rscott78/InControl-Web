@@ -1,5 +1,4 @@
-﻿
-// Change these 3 values to match your setup
+﻿// Change these 3 values to match your setup
 var server = "localhost";
 var serverPort = 8711;
 var serverPassword = "getindemo";
