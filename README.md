@@ -13,7 +13,7 @@ This project is at its very early stages. At current, the following is possible:
 
 ### Contributing Changes
 
-Anyone is able to pull the source code and contribute changes back -- indeed, this is encouraged and welcomed. Please be sure to follow the existing coding standards and patterns.
+Anyone is able to pull the source code and contribute changes back -- indeed, this is encouraged and welcomed. Please be sure to follow the existing coding standards and patterns. You'll want to brush up on Node.js (javaScript), Express and Jade (for rendering HTML).
 
 ### Setup
 
