@@ -11,10 +11,6 @@ This project is at its very early stages. At current, the following is possible:
 * View history
 * View and activate scenes
 
-### Known Issues
-
-If your InControl server is shut off, the website does not reconnect. You must restart it in the event of a disconnect.
-
 ### Contributing Changes
 
 Anyone is able to pull the source code and contribute changes back -- indeed, this is encouraged and welcomed. Please be sure to follow the existing coding standards and patterns.
@@ -44,3 +40,7 @@ By default, this will connect to localhost over the default port of 8711. Change
 To start the web server, type the following from a CMD prompt:
 
 ```node app.js```
+
+### Known Issues
+
+If your InControl server is shut off, the website does not reconnect. You must restart it in the event of a disconnect.
