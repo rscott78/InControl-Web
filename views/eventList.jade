@@ -1,0 +1,24 @@
+﻿extends layout
+
+block content	
+	h1= title
+
+	.table-responsive
+		table.table.table-hover
+			tr
+				th Time
+				th Device Name
+				th Type
+				th Name
+				th Old Level
+				th New Level
+			// The events variable is declared/assigned in the events.js route		
+			each e in events
+				tr
+					td #{e.historyDate}
+					td #{e.deviceName}
+					td #{e.changeType}
+					td #{e.changeName}
+					td #{e.oldLevel}
+					td #{e.newLevel}
+			

@@ -1,0 +1,63 @@
+doctype html
+html
+	head
+		title= title
+		link(rel='stylesheet', href='/stylesheets/style.css')
+	
+		link(rel="stylesheet", href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css")
+		link(rel="stylesheet", href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css")
+		script(src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js")
+		script(src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js")
+		
+	body
+
+		<!-- Fixed navbar -->
+		div(class="navbar navbar-default navbar-fixed-top", role="navigation")
+			.container
+				.navbar-header
+					button(type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse")
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					a.navbar-brand(href='/') InControl HA
+				.navbar-collapse.collapse
+					ul.nav.navbar-nav
+						li.active
+							a(href='/') Dashboard
+						li
+							a(href='/devices') Devices
+						li
+							a(href='/scenes') Scenes
+
+		div(id="dvMessage",style="margin-top:80px;")
+
+		.container.theme-showcase(role="main",style="margin-top:40px;") 
+			block content
+
+		script.
+			setTimeout("checkMessages()", 1000);
+			function checkMessages() {
+				
+				$.ajax({
+					type: "GET",
+					url: "/messages",
+					success: function(data) { 
+						if (data.messages && data.messages.length > 0) {							
+							for(var i = 0; i < data.messages.length; i++) {							
+								var msg = data.messages[i];
+								// alert(msg.message);
+								showMessage(msg.message);
+							}
+						}
+					}
+				});
+
+				// Restart the check message call
+				setTimeout("checkMessages()", 3000);
+			}
+
+			function showMessage(message) {
+				var divHtml = "<div class='alert alert-success alert-dismissable'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>" + message + "</div>";
+				$("#dvMessage").html(divHtml);				
+			}

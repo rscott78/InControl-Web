@@ -1,0 +1,17 @@
+﻿extends layout
+
+block content	
+	h1= title
+
+	div.row
+		each d in devices
+			div.col-md-3 
+				div.panel.panel-default
+					div.panel-body 
+						div.row
+							div.col-md-3 
+								img(src="/images/#{d.deviceImage()}",style="width:50px") 
+							div.col-md-9 
+								|#{d.name}
+								|turned off 15 minutes ago
+						

@@ -1,0 +1,33 @@
+﻿extends layout
+
+block content	
+	h1= title
+
+	div.row
+		// The scenes variable is declared/assigned in the scenes.js route		
+		each s in scenes
+			div.col-md-3
+				div.panel.panel-default
+					div.panel-body 
+						div.row
+							div.col-md-3 
+								img(src="/images/icon_list_scenes_on.png",style="width:50px") 
+							div.col-md-9
+								|#{s.sceneName}<br/>								
+								button.btn.btn-primary.btn-sm(onclick="activateScene('#{s.sceneId}');") Activate
+
+	
+	script.
+		function activateScene(sceneId) {			
+			// Send an ajax post to the server to activate the scene			
+			$.ajax({
+				type: "POST",
+				url: "/scenes/activate/" + sceneId + "/?d=" + new Date().getTime(),
+				success: function(data) { 					
+				},
+				error: function(one, two, three) {								
+				}
+			});
+		}
+	
+	
