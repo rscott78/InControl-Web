@@ -71,15 +71,15 @@ function parseDevices(deviceJson) {
 		// Retrieve the device from the local version
 		var device = getDevice(rDevice.deviceId);
 		if (!device) {
-			// Device doesn't exist, so add this to the list
-			devices.push(rDevice);
-
+			
 			// Add a function for retrieving the image
 			// TODO: This should be better abstracted
 			rDevice.deviceImage = getDeviceImage;
 			rDevice.status = getDeviceStatus;
 
-			//console.log("Added", rDevice);
+			// Device doesn't exist, so add this to the list
+			devices.push(rDevice);
+
 		} else {
 			// Device exists, update some key properties that tend to change often
 			device.name = rDevice.name;
@@ -89,7 +89,16 @@ function parseDevices(deviceJson) {
 			device.sr = rDevice.sr;
 			device.deviceType = rDevice.deviceType;
 
-			//console.log("Updated", device);
+			//console.log("Device level changed", device);
+			// Send out the changed device to the listening clients
+			SOCKETIO.sockets.emit('device', {
+				deviceId: device.deviceId,
+				status: device.status(),
+				deviceImage: device.deviceImage(),
+				level: device.level,
+				name: device.name
+			});
+			//SOCKETIO.sockets.emit('message', 'Hello - a device changed!');
 		}		
 	}
 
@@ -227,13 +236,19 @@ function getDeviceStatus() {
 		case DeviceTypeEnum.Thermostat:
 			status = "";
 			break;
+		case DeviceTypeEnum.EntryControl:
+			status = "{locked} {timeAgo}";
+			break;
 	}
 
 	// Replace texts
 	status = status.replace("{onOff}", this.level > 0 ? "on" : "off");
+	status = status.replace("{locked}", this.level > 0 ? "locked" : "unlocked");
 	status = status.replace("{openClosed}", this.level > 0 ? "opened" : "closed");
 	status = status.replace("{motionState}", this.level > 0 ? "" : "");
-	status = status.replace("{timeAgo}", "todo");
+	status = status.replace("{timeAgo}", MOMENT(this.lastLevelUpdate).fromNow());
+
+
 
 	return status;
 }

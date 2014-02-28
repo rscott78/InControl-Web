@@ -10,8 +10,37 @@ block content
 					div.panel-body 
 						div.row
 							div.col-md-3 
-								img(src="/images/#{d.deviceImage()}",style="width:50px") 
+								img(id='img_#{d.deviceId}', src="/images/#{d.deviceImage()}",style="width:50px") 
 							div.col-md-9 
-								|#{d.name} <br/>
-								|#{d.status()}
+								span(id='name_#{d.deviceId}') #{d.name}
+								|<br/>
+								span(id='status_#{d.deviceId}', style='color:#999999;font-size:11px;') #{d.status()}
 						
+
+	<script src="/socket.io/socket.io.js"></script>
+	script(type='text/javascript').
+		
+		var socket = io.connect('http://localhost:3000');
+		
+		socket.on('connect', function(data) {
+			socket.emit('message', { test: 1 } );
+		});
+
+		// Listen for changes to devices
+		socket.on('device', function(device) {
+
+			// Update the device info on the screen
+			$("#name_" + device.deviceId).html(device.name);
+			$("#status_" + device.deviceId).html(device.status);
+			$("#img_" + device.deviceId).attr("src", "/images/" + device.deviceImage);
+			console.log(device);
+		});
+
+		socket.on('message', function(data) {
+			console.log(data);
+		});
+
+		socket.on('error', function(data) {
+			console.log(data);
+			//alert(data);
+		});

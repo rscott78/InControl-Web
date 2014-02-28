@@ -12,6 +12,8 @@ var express = require('express');
 var routes = require('./routes');
 var http = require('http');
 var path = require('path');
+var io = require('socket.io');
+MOMENT = require('moment')
 
 // Controllers 
 var devicesRoute = require('./routes/devices');
@@ -47,9 +49,21 @@ app.get('/devices', devicesRoute.list);
 app.post('/scenes/activate/:sceneId', scenesRoute.activate);
 app.get('/messages', messagesRoute.list);
 
-http.createServer(app).listen(app.get('port'), function(){
+httpServer = http.createServer(app).listen(app.get('port'), function(){
     console.log("InControl web server listening on port " + app.get('port'));
 
     // Start up the server connection to InControl
     CLIENT.startServer();
+});
+
+SOCKETIO = io.listen(httpServer);
+SOCKETIO.sockets.on('connection', function (socket) {
+  console.log("Connection!");
+
+  socket.emit('message', 'Hello from the server!');
+
+  socket.on('message', function (stuff) {      
+      console.log(stuff);
+  }) 
+
 });
