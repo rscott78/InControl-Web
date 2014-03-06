@@ -1,7 +1,7 @@
 ﻿
 var currentRoomId = "";
 
-var deviceTemplate = "<div class='col-md-3'><div class='panel panel-default'><div class='panel-body'><div class='row'><div class='col-md-3'><img id='img_{deviceId}' src='/images/{deviceImage}' style='width:50px'></div><div class='col-md-9 ellipsis' ><div style='' class='ellipsis' id='name_{deviceId}'>{deviceName}</div><span class='ellipsis' style='color:#999999;font-size:11px;' id='status_{deviceId}'>{deviceStatus}</span></div></div></div></div></div>";
+var deviceTemplate = "<div class='col-md-3 draggable' id='{deviceId}'><div class='panel panel-default'><div class='panel-body'><div class='row'><div class='col-md-3'><img id='img_{deviceId}' src='/images/{deviceImage}' style='width:50px'></div><div class='col-md-9 ellipsis' ><div style='' class='ellipsis' id='name_{deviceId}'>{deviceName}</div><span class='ellipsis' style='color:#999999;font-size:11px;' id='status_{deviceId}'>{deviceStatus}</span></div></div></div></div></div>";
 
 var socket = io.connect('http://localhost:3000');
 
@@ -21,6 +21,7 @@ socket.on('device', function (updatedDevice) {
         device.lastLevelUpdate = updatedDevice.lastLevelUpdate;
         device.level = updatedDevice.level;
         device.name = updatedDevice.name;
+        device.roomId = updatedDevice.roomId;
 
         // Update the device info on the screen
         $("#name_" + device.deviceId).html(device.name);
@@ -56,6 +57,34 @@ $(function () {
         updateDevices(roomId);        
     });
 
+    // Setup droppable room tabs
+    $(".droppable").droppable({
+        activeClass: "ui-state-default",
+        hoverClass: "ui-state-hover",
+        tolerance: 'pointer',
+        drop: function (event, ui) {
+            // $(this).addClass("ui-state-highlight");
+            var deviceId = ui.draggable.attr('id');
+            var droppedRoomId = $(this).attr('id');
+            console.log("Dragged", deviceId);
+            console.log("Dragged room", droppedRoomId);
+
+            // Remove the device that was dragged
+            ui.draggable.remove();
+
+            // Notify the server that a room change should happen for the given device
+            $.ajax({
+                type: "POST",
+                url: "/device/" + deviceId + "/setRoom/?d=" + new Date().getTime(),
+                data: { roomId: droppedRoomId },
+                success: function (data) {
+                },
+                error: function (one, two, three) {
+                }
+            });
+        }
+    });
+
 });
 
 
@@ -79,13 +108,25 @@ function updateDevices(roomId) {
             deviceHtml = deviceHtml.replace("{deviceStatus}", getDeviceStatus(d));
             deviceHtml = deviceHtml.replace(/{deviceId}/g, d.deviceId);
 
-            if (d.name.indexOf('Office') != -1) {
-                // console.log(d.name, getDeviceStatus(d));
-            }
-
             $("#deviceListRow").append(deviceHtml);
         }
     }
+
+    // Tell the devices they are draggable
+    $(".draggable").draggable({
+        revert: "invalid",
+        opacity: 0.35,
+        scroll: false
+    });
+
+    // Set height of the list
+    var newHeight = $(window).height() - $("#deviceList").offset().top;
+    console.log("Setting height", newHeight);
+
+    //newHeight = 100;
+
+    $("#all").css("height", newHeight + "px");
+    //$("#deviceListRow").height(newHeight);
 }
 
 ///

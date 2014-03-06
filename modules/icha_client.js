@@ -97,16 +97,16 @@ function parseDevices(deviceJson) {
 			device.deviceImage = getDeviceImage(device);
 			device.status = getDeviceStatus(device);
 
-			//console.log("Device level changed", device);
 			// Send out the changed device to the listening clients
 			SOCKETIO.sockets.emit('device', {
 			    deviceId: device.deviceId,
 			    lastLevelUpdate: device.lastLevelUpdate,
 				deviceImage: device.deviceImage,
 				level: device.level,
-				name: device.name
+				name: device.name,
+                roomId: device.roomId
 			});
-			//SOCKETIO.sockets.emit('message', 'Hello - a device changed!');
+			
 		}
 	}
 
@@ -333,4 +333,11 @@ exports.messages = function () {
 
 	// Return the temp variable
 	return msgs;
+}
+
+exports.assignRoom = function (deviceId, roomId) {
+    sendCommand("assignRoom", {
+        deviceId: deviceId,
+        roomId: roomId
+    });
 }

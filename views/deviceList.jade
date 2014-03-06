@@ -3,20 +3,27 @@
 block content	
 	h1= title
 
-	ul(class="nav nav-tabs", id="roomTabs")
+	ul(class="nav nav-tabs", id="roomTabs", style="dposition: fixed")
 		li(class="active")
 			a(href="#all", data-toggle="tab") All
   
 		each r in rooms
-			li 
-				a(href="#", roomId="#{r.roomId}", data-toggle="tab", id="tabRef") #{r.roomName}
+			li(class="droppable", id='#{r.roomId}') 
+				a(href="#", roomId="#{r.roomId}", data-toggle="tab", id="tabRef") #{r.roomName}<span class="badge"></span>
 	
-	div(class="tab-content")
-		div(class="tab-pane active", id="all", style="padding:5px;")
+	div(id="deviceList", class="tab-content")
+		div(class="tab-pane active", id="all", style="padding:5px; overflow-y:scroll; overflow-x:hidden; height:100px;")
 			div.row(id="deviceListRow")
 
 
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="/javascripts/deviceList.js"></script>
 	script(type='text/javascript').
+		// Set the height of the device list so that scrolling works
+		$(function () {
+			console.log("window:", $(window).height());
+			console.log("document:", $(document).height());
+			console.log($("#deviceList").offset().top);
+			
+		});
 

@@ -49,7 +49,9 @@ app.get('/devices', devicesRoute.list);
 
 // Routes for ajax calls
 app.post('/scenes/activate/:sceneId', scenesRoute.activate);
+app.post('/device/:deviceId/setRoom', devicesRoute.setRoom);
 app.get('/messages', messagesRoute.list);
+
 
 httpServer = http.createServer(app).listen(app.get('port'), function(){
     console.log("InControl web server listening on port " + app.get('port'));
