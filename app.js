@@ -34,6 +34,7 @@ app.configure(function(){
   app.use(app.router);
   app.use(require('stylus').middleware(__dirname + '/public'));
   app.use(express.static(path.join(__dirname, 'public')));
+  app.use("/model", express.static(__dirname + "/model"));
 });
 
 app.configure('development', function(){
@@ -62,8 +63,17 @@ SOCKETIO.sockets.on('connection', function (socket) {
 
   socket.emit('message', 'Hello from the server!');
 
-  socket.on('message', function (stuff) {      
-      console.log(stuff);
-  }) 
+  socket.on('message', function (stuff) {
+    console.log("message received", stuff);
+
+    // Sends devices to the client
+    if (stuff.command == "getDevices") {
+      console.log("message getDevices received");
+      socket.emit('message', { 
+        messageType: "devices",
+        devices: CLIENT.devices() 
+      });
+    }
+  }); 
 
 });

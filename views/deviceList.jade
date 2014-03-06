@@ -3,27 +3,33 @@
 block content	
 	h1= title
 
-	div.row
-		each d in devices
-			div.col-md-3 
-				div.panel.panel-default
-					div.panel-body 
-						div.row
-							div.col-md-3 
-								img(id='img_#{d.deviceId}', src="/images/#{d.deviceImage()}",style="width:50px") 
-							div.col-md-9 
-								span(id='name_#{d.deviceId}') #{d.name}
-								|<br/>
-								span(id='status_#{d.deviceId}', style='color:#999999;font-size:11px;') #{d.status()}
-						
+	ul(class="nav nav-tabs", id="roomTabs")
+		li(class="active")
+			a(href="#all", data-toggle="tab") All
+  
+		each r in rooms
+			li 
+				a(href="#", roomId="#{r.roomId}", data-toggle="tab", id="tabRef") #{r.roomName}
+	
+	div(class="tab-content")
+		div(class="tab-pane active", id="all", style="padding:5px;")
+			div.row(id="deviceListRow")
+
 
 	<script src="/socket.io/socket.io.js"></script>
 	script(type='text/javascript').
-		
+
+		var currentRoomId = "";
+	
+		var deviceTemplate = "<div class='col-md-3'><div class='panel panel-default'><div class='panel-body'><div class='row'><div class='col-md-3'><img id='img_{deviceId}' src='/images/{deviceImage}' style='width:50px'></div><div class='col-md-9 ellipsis' ><div style='' class='ellipsis' id='name_{deviceId}'>{deviceName}</div><span class='ellipsis' style='color:#999999;font-size:11px;' id='status_{deviceId}'>{deviceStatus}</span></div></div></div></div></div>";
+
+		// Stores all local devices
+		var devices = [];
+
 		var socket = io.connect('http://localhost:3000');
 		
 		socket.on('connect', function(data) {
-			socket.emit('message', { test: 1 } );
+			socket.emit('message', { command: "getDevices" } );
 		});
 
 		// Listen for changes to devices
@@ -37,10 +43,84 @@ block content
 		});
 
 		socket.on('message', function(data) {
-			console.log(data);
+
+			if (data.messageType == "devices") {
+				// this is an array of devices
+				devices = data.devices;
+				updateDevices(currentRoomId);
+			}
+
+			console.log("message", data);
 		});
 
 		socket.on('error', function(data) {
-			console.log(data);
+			//console.log(data);
 			//alert(data);
 		});
+
+		function updateDevices(roomId) {
+
+			$("#deviceListRow").empty();
+
+			for(var dIdx in devices) {
+				var d = devices[dIdx];
+
+				if (!roomId || roomId == "" || d.roomId == roomId) {
+					
+					var deviceHtml = deviceTemplate.replace("{deviceName}", d.name);
+					deviceHtml = deviceHtml.replace("{deviceImage}", d.deviceImage);
+					deviceHtml = deviceHtml.replace("{deviceStatus}", getDeviceStatus(d));
+					deviceHtml = deviceHtml.replace(/{deviceId}/g, d.deviceId);
+
+					$("#deviceListRow").append(deviceHtml);
+				}
+			}
+		}
+
+		$(function() {
+
+			$('#roomTabs').bind('click', function (e) {
+				var roomId = $(e.target).attr("roomId"); 
+				
+				updateDevices(roomId);
+				console.log(roomId);
+			});
+
+		});
+
+		function getDeviceStatus(device) {
+
+			var status = "";
+
+			switch (device.deviceType) {
+				case DeviceTypeEnum.StandardSwitch:
+				case DeviceTypeEnum.DimmerSwitch:
+				case DeviceTypeEnum.PowerOutlet:
+					status = "turned {onOff} {timeAgo}";
+					break;		
+				case DeviceTypeEnum.BinarySensor:
+					status = "{openClosed} {timeAgo}";
+					break;
+				case DeviceTypeEnum.MotionSensor:
+					status = "{motionState} {timeAgo}";
+					break;
+				case DeviceTypeEnum.IpCamera:
+					status = "Doing the camera thing";
+					break;
+				case DeviceTypeEnum.Thermostat:
+					status = "";
+					break;
+				case DeviceTypeEnum.EntryControl:
+					status = "{locked} {timeAgo}";
+					break;
+			}
+
+			// Replace texts
+			status = status.replace("{onOff}", device.level > 0 ? "on" : "off");
+			status = status.replace("{locked}", device.level > 0 ? "locked" : "unlocked");
+			status = status.replace("{openClosed}", device.level > 0 ? "opened" : "closed");
+			status = status.replace("{motionState}", device.level > 0 ? "" : "");
+			status = status.replace("{timeAgo}", MOMENT(device.lastLevelUpdate).fromNow());
+
+			return status;
+		}

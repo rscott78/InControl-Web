@@ -15,13 +15,3 @@
     IpCamera: 14,
     EnergyMonitor: 15
 };
-
-function HaDevice() {
-    this.deviceType = DeviceTypeEnum.StandardSwitch;
-}
-
-HaDevice.prototype.someMethod = function(param1, param2) {
-    // sample method call
-};
-
-module.exports = HaDevice;

@@ -25,6 +25,7 @@ var devices = [];
 var scenes = [];
 var messages = [];
 var events = [];
+var rooms = [];
 
 // For direct-connect client; if we ever wanted to, this is where a cloud connector could go as well
 var connector; 
@@ -48,6 +49,9 @@ function processMessage(jsonMessage) {
 			break;
 		case "sceneActivated":
 			sendMessage("Scene " + jsonMessage.commandData.sceneName + " has been activated.");			
+			break;
+		case "rooms":
+			parseRooms(jsonMessage.commandData);
 			break;
 		case "events":
 			parseEvents(jsonMessage.commandData);
@@ -74,8 +78,8 @@ function parseDevices(deviceJson) {
 			
 			// Add a function for retrieving the image
 			// TODO: This should be better abstracted
-			rDevice.deviceImage = getDeviceImage;
-			rDevice.status = getDeviceStatus;
+			rDevice.deviceImage = getDeviceImage(rDevice);
+			rDevice.status = getDeviceStatus(rDevice);
 
 			// Device doesn't exist, so add this to the list
 			devices.push(rDevice);
@@ -89,19 +93,30 @@ function parseDevices(deviceJson) {
 			device.sr = rDevice.sr;
 			device.deviceType = rDevice.deviceType;
 
+			// Update status & image
+			device.deviceImage = getDeviceImage(device);
+			device.status = getDeviceStatus(device);
+
 			//console.log("Device level changed", device);
 			// Send out the changed device to the listening clients
 			SOCKETIO.sockets.emit('device', {
 				deviceId: device.deviceId,
-				status: device.status(),
-				deviceImage: device.deviceImage(),
+				status: device.status,
+				deviceImage: device.deviceImage,
 				level: device.level,
 				name: device.name
 			});
 			//SOCKETIO.sockets.emit('message', 'Hello - a device changed!');
-		}		
+		}
 	}
 
+}
+
+///
+/// Parses the room list
+///
+function parseRooms(roomJson) {
+	rooms = roomJson.rooms;
 }
 
 ///
@@ -136,6 +151,7 @@ function connected() {
 	getDevices();
 	getScenes();
 	getEvents();
+	getRooms();
 }
 
 ///
@@ -165,6 +181,11 @@ function getScenes() {
 function getEvents() {
 	sendCommand("getEvents", {});
 }
+
+function getRooms() {
+	sendCommand("getRooms", {});
+}
+
 /// 
 /// Prepares a command to send to the server
 /// 
@@ -181,10 +202,10 @@ function sendCommand(commandType, commandData) {
 /// Function assigned to the device object; used to retrieve the current device image
 /// TODO: Should probably be elsewhere to keep this module cleaner
 ///
-function getDeviceImage() {
+function getDeviceImage(device) {
 	var imageName = "icon_list_alarm_{0}.png";
 
-	switch (this.deviceType) {
+	switch (device.deviceType) {
 		case DeviceTypeEnum.StandardSwitch:
 			imageName = "icon_list_switch_{0}.png";
 			break;
@@ -208,17 +229,17 @@ function getDeviceImage() {
 			break;
 	}
 
-	return imageName.replace("{0}", this.level > 0 ? "on" : "off");	
+	return imageName.replace("{0}", device.level > 0 ? "on" : "off");	
 }
 
 ///
+/// DO NOT USE THIS! It's being moved client-side
 ///
-///
-function getDeviceStatus() {
+function getDeviceStatus(device) {
 
 	var status = "";
 
-	switch (this.deviceType) {
+	switch (device.deviceType) {
 		case DeviceTypeEnum.StandardSwitch:
 		case DeviceTypeEnum.DimmerSwitch:
 		case DeviceTypeEnum.PowerOutlet:
@@ -242,13 +263,11 @@ function getDeviceStatus() {
 	}
 
 	// Replace texts
-	status = status.replace("{onOff}", this.level > 0 ? "on" : "off");
-	status = status.replace("{locked}", this.level > 0 ? "locked" : "unlocked");
-	status = status.replace("{openClosed}", this.level > 0 ? "opened" : "closed");
-	status = status.replace("{motionState}", this.level > 0 ? "" : "");
-	status = status.replace("{timeAgo}", MOMENT(this.lastLevelUpdate).fromNow());
-
-
+	status = status.replace("{onOff}", device.level > 0 ? "on" : "off");
+	status = status.replace("{locked}", device.level > 0 ? "locked" : "unlocked");
+	status = status.replace("{openClosed}", device.level > 0 ? "opened" : "closed");
+	status = status.replace("{motionState}", device.level > 0 ? "" : "");
+	status = status.replace("{timeAgo}", MOMENT(device.lastLevelUpdate).fromNow());
 
 	return status;
 }
@@ -279,6 +298,10 @@ exports.scenes = function () {
 ///
 exports.events = function () {
 	return events;
+}
+
+exports.rooms = function() {
+	return rooms;
 }
 
 /// 

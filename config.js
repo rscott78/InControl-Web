@@ -1,5 +1,5 @@
 ﻿// Change these 3 values to match your setup
-var server = "localhost";
+var server = "chumad.homeip.net";
 var serverPort = 8711;
 var serverPassword = "getindemo";
 
