@@ -35,6 +35,7 @@ app.configure(function(){
   app.use(require('stylus').middleware(__dirname + '/public'));
   app.use(express.static(path.join(__dirname, 'public')));
   app.use("/model", express.static(__dirname + "/model"));
+  app.use("/node_modules", express.static(__dirname + "/node_modules"));
 });
 
 app.configure('development', function(){

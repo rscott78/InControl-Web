@@ -100,8 +100,8 @@ function parseDevices(deviceJson) {
 			//console.log("Device level changed", device);
 			// Send out the changed device to the listening clients
 			SOCKETIO.sockets.emit('device', {
-				deviceId: device.deviceId,
-				status: device.status,
+			    deviceId: device.deviceId,
+			    lastLevelUpdate: device.lastLevelUpdate,
 				deviceImage: device.deviceImage,
 				level: device.level,
 				name: device.name
