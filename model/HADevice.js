@@ -53,3 +53,42 @@ function getDeviceStatus(device) {
     return status;
 }
 
+function getDeviceShortStatus(device) {
+
+    var status = "";
+
+    switch (device.deviceType) {
+        case DeviceTypeEnum.DimmerSwitch:
+            status = "" + device.level + "%";
+            break;
+        case DeviceTypeEnum.StandardSwitch:        
+        case DeviceTypeEnum.PowerOutlet:
+            status = "{onOff}";
+            break;
+        case DeviceTypeEnum.BinarySensor:
+            status = "{openClosed}";
+            break;
+        case DeviceTypeEnum.MotionSensor:
+            status = "{motionState}";
+            break;
+        case DeviceTypeEnum.IpCamera:
+            status = "";
+            break;
+        case DeviceTypeEnum.Thermostat:
+            status = "";
+            break;
+        case DeviceTypeEnum.EntryControl:
+            status = "{locked}";
+            break;
+    }
+
+    // Replace texts
+    status = status.replace("{onOff}", device.level > 0 ? "on" : "off");
+    status = status.replace("{locked}", device.level > 0 ? "locked" : "unlocked");
+    status = status.replace("{openClosed}", device.level > 0 ? "opened" : "closed");
+    status = status.replace("{motionState}", device.level > 0 ? "motion" : "");
+    status = status.replace("{timeAgo}", moment(device.lastLevelUpdate).fromNow());
+
+    return status;
+}
+

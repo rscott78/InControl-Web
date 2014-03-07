@@ -227,6 +227,9 @@ function getDeviceImage(device) {
 		case DeviceTypeEnum.Thermostat:
 			imageName = "icon_list_thermostat_on.png";
 			break;
+	    case DeviceTypeEnum.EntryControl:
+	        imageName = "icon_list_lock_{0}.png";
+	        break;
 	}
 
 	return imageName.replace("{0}", device.level > 0 ? "on" : "off");	

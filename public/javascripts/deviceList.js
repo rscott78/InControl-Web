@@ -14,6 +14,7 @@ var deviceTemplate = "<div class='col-md-3 draggable' id='{deviceId}' data-toggl
                                     + "</div>"
                                     + "<div class='col-md-2 ellipsis' style='padding-left:0px;padding-top:2px;'>"
                                         + "<input class='knob' id='level_{deviceId}' value='{deviceLevel}'>"
+                                        + "<span  id='ss_{deviceId}' style='position:absolute;top:16px;left:0px;text-align:center;width:42px;font-size:10px;'>{shortStatus}</span>"
                                     + "</div>"
                                 + "</div>"
                             //+ "</div>"
@@ -45,6 +46,7 @@ socket.on('device', function (updatedDevice) {
         $("#status_" + device.deviceId).html(getDeviceStatus(device));
         $("#img_" + device.deviceId).attr("src", "/images/" + updatedDevice.deviceImage);
         $("#level_" + device.deviceId).val(updatedDevice.level).trigger("change");
+        $("#ss_" + device.deviceId).html(getDeviceShortStatus(device));
         // $("#level_" + device.deviceId).knob();
 
     }
@@ -132,6 +134,7 @@ function updateDevices(roomId) {
             deviceHtml = deviceHtml.replace("{deviceImage}", d.deviceImage);
             deviceHtml = deviceHtml.replace("{deviceLevel}", d.level);
             deviceHtml = deviceHtml.replace("{deviceStatus}", getDeviceStatus(d));
+            deviceHtml = deviceHtml.replace("{shortStatus}", getDeviceShortStatus(d));            
             deviceHtml = deviceHtml.replace(/{deviceId}/g, d.deviceId);
 
             $("#deviceListRow").append(deviceHtml);
