@@ -104,7 +104,7 @@ function parseDevices(deviceJson) {
 				deviceImage: device.deviceImage,
 				level: device.level,
 				name: device.name,
-                roomId: device.roomId
+                roomId: device.roomId 
 			});
 			
 		}

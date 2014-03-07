@@ -3,27 +3,38 @@
 block content	
 	h1= title
 
-	ul(class="nav nav-tabs", id="roomTabs", style="dposition: fixed")
+	div(class="modal fade" id="deviceModal" tabindex="-1" role="dialog" aria-labelledby="mdTitle" aria-hidden="true").
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="mdTitle">Device</h4>
+				</div>
+				<div class="modal-body" id="mdBody">
+					
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+
+	ul(class="nav nav-tabs", id="roomTabs")
 		li(class="active")
 			a(href="#all", data-toggle="tab") All
   
 		each r in rooms
-			li(class="droppable", id='#{r.roomId}') 
+			li(class="droppable", id='#{r.roomId}')
 				a(href="#", roomId="#{r.roomId}", data-toggle="tab", id="tabRef") #{r.roomName}<span class="badge"></span>
 	
 	div(id="deviceList", class="tab-content")
 		div(class="tab-pane active", id="all", style="padding:5px; overflow-y:scroll; overflow-x:hidden; height:100px;")
 			div.row(id="deviceListRow")
 
-
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="/javascripts/deviceList.js"></script>
 	script(type='text/javascript').
-		// Set the height of the device list so that scrolling works
+		
 		$(function () {
-			console.log("window:", $(window).height());
-			console.log("document:", $(document).height());
-			console.log($("#deviceList").offset().top);
 			
 		});
-

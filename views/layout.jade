@@ -5,20 +5,20 @@ html
 		link(rel='stylesheet', href='/stylesheets/style.css')
 		link(rel='stylesheet', href='/stylesheets/icha-style.css')
 	
-		link(rel="stylesheet", href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css")
-		link(rel="stylesheet", href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css")
+		link(rel="stylesheet", href="/stylesheets/bootstrap.min.css")
+		link(rel="stylesheet", href="/stylesheets/bootstrap-theme.min.css")
 		script(src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js")
-		script(src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js")
+		script(src="/javascripts/bootstrap.min.js")
+		script(src="/javascripts/jquery.knob.js")
 		script(src="model/HADevice.js")
-		<link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
-		<script src="//code.jquery.com/jquery-1.9.1.js"></script>
+		<link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/start/jquery-ui.css">		
 		<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
 		<script src="/node_modules/moment/moment.js"></script>
 		
-	body
+	body(style='background-color:#222')
 
 		<!-- Fixed navbar -->
-		div(class="navbar navbar-default navbar-fixed-top", role="navigation")
+		div(class="navbar-inverse navbar-default navbar-fixed-top", role="navigation")
 			.container
 				.navbar-header
 					button(type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse")
@@ -38,7 +38,7 @@ html
 
 		div(id="dvMessage",style="margin-top:80px;")
 
-		.container.theme-showcase(role="main",style="margin-top:40px;") 
+		.container.theme-showcase(role="main",style="margin-top:40px;background-color:white;border-radius:5px;") 
 			block content
 
 		script.

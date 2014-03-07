@@ -1,7 +1,24 @@
 ﻿
 var currentRoomId = "";
 
-var deviceTemplate = "<div class='col-md-3 draggable' id='{deviceId}'><div class='panel panel-default'><div class='panel-body'><div class='row'><div class='col-md-3'><img id='img_{deviceId}' src='/images/{deviceImage}' style='width:50px'></div><div class='col-md-9 ellipsis' ><div style='' class='ellipsis' id='name_{deviceId}'>{deviceName}</div><span class='ellipsis' style='color:#999999;font-size:11px;' id='status_{deviceId}'>{deviceStatus}</span></div></div></div></div></div>";
+var deviceTemplate = "<div class='col-md-3 draggable' id='{deviceId}' data-toggle='modal' data-target='#deviceModal'>"
+                        + "<div style='cursor: pointer; padding:4px;margin-bottom:7px;' class='panel panel-default'>"
+                            //+ "<div class='panel-body'>"
+                                + "<div class='row'>"
+                                    + "<div class='col-md-2'>"
+                                        + "<img id='img_{deviceId}' src='/images/{deviceImage}' style='width:45px'>"
+                                    + "</div>"
+                                    + "<div class='col-md-8 ellipsis' style=''>"
+                                        + "<div class='ellipsis' id='name_{deviceId}' style='padding-top:4px;'>{deviceName}</div>"
+                                        + "<span class='ellipsis' style='color:#999999;font-size:11px;' id='status_{deviceId}'>{deviceStatus}</span>"
+                                    + "</div>"
+                                    + "<div class='col-md-2 ellipsis' style='padding-left:0px;padding-top:2px;'>"
+                                        + "<input class='knob' id='level_{deviceId}' value='{deviceLevel}'>"
+                                    + "</div>"
+                                + "</div>"
+                            //+ "</div>"
+                        + "</div>"
+                    + "</div>";
 
 var socket = io.connect('http://localhost:3000');
 
@@ -27,9 +44,11 @@ socket.on('device', function (updatedDevice) {
         $("#name_" + device.deviceId).html(device.name);
         $("#status_" + device.deviceId).html(getDeviceStatus(device));
         $("#img_" + device.deviceId).attr("src", "/images/" + updatedDevice.deviceImage);
+        $("#level_" + device.deviceId).val(updatedDevice.level).trigger("change");
+        // $("#level_" + device.deviceId).knob();
+
     }
 
-    // console.log(device);
 });
 
 socket.on('message', function (data) {
@@ -54,7 +73,7 @@ $(function () {
     $('#roomTabs').bind('click', function (e) {
         var roomId = $(e.target).attr("roomId");
         currentRoomId = roomId;
-        updateDevices(roomId);        
+        updateDevices(roomId);
     });
 
     // Setup droppable room tabs
@@ -63,12 +82,10 @@ $(function () {
         hoverClass: "ui-state-hover",
         tolerance: 'pointer',
         drop: function (event, ui) {
-            // $(this).addClass("ui-state-highlight");
+            
             var deviceId = ui.draggable.attr('id');
             var droppedRoomId = $(this).attr('id');
-            console.log("Dragged", deviceId);
-            console.log("Dragged room", droppedRoomId);
-
+            
             // Remove the device that was dragged
             ui.draggable.remove();
 
@@ -83,6 +100,14 @@ $(function () {
                 }
             });
         }
+    });
+
+    // Click to open dialog box
+    $('#deviceModal').on('show.bs.modal', function (e) {
+        var deviceId = $(e.relatedTarget).attr('id');
+        
+        var device = getDevice(deviceId);
+        $('#mdTitle').html(device.name);
     });
 
 });
@@ -105,6 +130,7 @@ function updateDevices(roomId) {
 
             var deviceHtml = deviceTemplate.replace("{deviceName}", d.name);
             deviceHtml = deviceHtml.replace("{deviceImage}", d.deviceImage);
+            deviceHtml = deviceHtml.replace("{deviceLevel}", d.level);
             deviceHtml = deviceHtml.replace("{deviceStatus}", getDeviceStatus(d));
             deviceHtml = deviceHtml.replace(/{deviceId}/g, d.deviceId);
 
@@ -118,15 +144,18 @@ function updateDevices(roomId) {
         opacity: 0.35,
         scroll: false
     });
-
-    // Set height of the list
-    var newHeight = $(window).height() - $("#deviceList").offset().top;
-    console.log("Setting height", newHeight);
-
-    //newHeight = 100;
-
+    
+    // Set height of the list to fill the entire remaining portion of the page
+    var newHeight = $(window).height() - $("#deviceList").offset().top;    
     $("#all").css("height", newHeight + "px");
-    //$("#deviceListRow").height(newHeight);
+
+    // Knobize the controls
+    $(".knob").knob({
+        displayInput: false,
+        width: 42,
+        height: 42,
+        displayPrevious: true 
+    });
 }
 
 ///
@@ -148,11 +177,12 @@ function liveUpdateStatus() {
         console.log("Error!", Ex);
     }
 
-    setTimeout("liveUpdateStatus();", 10000);
+    // Trigger another update in 60 seconds
+    setTimeout("liveUpdateStatus();", 60000);
 }
 
-// This updates the status every 10 seconds
-setTimeout("liveUpdateStatus();", 10000);
+// This updates the status in 10 seconds
+setTimeout("liveUpdateStatus();", 60000);
 
 ///
 /// Gets a device from the local device list
