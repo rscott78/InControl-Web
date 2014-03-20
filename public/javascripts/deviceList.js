@@ -21,7 +21,8 @@ var deviceTemplate = "<div class='col-md-3 draggable' id='{deviceId}' data-toggl
                         + "</div>"
                     + "</div>";
 
-var socket = io.connect('http://localhost:3000');
+var host = window.location.host;
+var socket = io.connect('http://' + host);
 
 socket.on('connect', function (data) {
     socket.emit('message', { command: "getDevices" });
