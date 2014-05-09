@@ -15,7 +15,7 @@ block content
 			// The events variable is declared/assigned in the events.js route		
 			each e in events
 				tr
-					td #{e.historyDate}
+					td #{moment().format("lll")}
 					td #{e.deviceName}
 					td #{e.changeType}
 					td #{e.changeName}

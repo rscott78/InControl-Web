@@ -6,6 +6,8 @@ function DirectConnectClient(serverHost, serverPort, messageReceivedCallback, co
     this.connectedCallback = connectedCallback;
 
     var ws = new WebSocket('ws://' + serverHost + ':' + serverPort);
+
+    console.log("Connecting to server " + serverHost + ":" + serverPort);
     
     ws.on('open', function () {
         // Request the device list
@@ -31,8 +33,8 @@ function DirectConnectClient(serverHost, serverPort, messageReceivedCallback, co
         console.log('Disconnected from server!');
     });
 
-    ws.on('error', function () {
-        console.log('Error connecting to server!');
+    ws.on('error', function (data) {
+        console.log('Error connecting to server!', data);
     });
 
     this.send = function (json) {

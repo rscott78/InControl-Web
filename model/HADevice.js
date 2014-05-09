@@ -85,7 +85,7 @@ function getDeviceShortStatus(device) {
     // Replace texts
     status = status.replace("{onOff}", device.level > 0 ? "on" : "off");
     status = status.replace("{locked}", device.level > 0 ? "locked" : "unlocked");
-    status = status.replace("{openClosed}", device.level > 0 ? "opened" : "closed");
+    status = status.replace("{openClosed}", device.level > 0 ? "open" : "closed");
     status = status.replace("{motionState}", device.level > 0 ? "motion" : "");
     status = status.replace("{timeAgo}", moment(device.lastLevelUpdate).fromNow());
 

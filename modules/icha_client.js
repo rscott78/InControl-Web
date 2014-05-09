@@ -130,7 +130,7 @@ function parseScenes(sceneJson) {
 /// Parses event list from the server
 ///
 function parseEvents(eventJson) {
-	events = eventJson.events;
+    events = eventJson.events;
 }
 
 ///
@@ -305,6 +305,10 @@ exports.events = function () {
 
 exports.rooms = function() {
 	return rooms;
+}
+
+exports.refreshEvents = function () {
+    getEvents();
 }
 
 /// 
